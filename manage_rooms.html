@@ -22,8 +22,47 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="assets/css/dashboard.css" />
+    <style>
+      #toggleSidebar {
+        border-radius: 12px !important;
+        border: 1px solid #edf2f7 !important;
+        background: #fff;
+        padding: 8px 12px;
+      }
+      .card-room {
+        border-radius: 28px;
+        border: 1px solid #edf2f7 !important;
+        transition: 0.3s;
+        height: 100%;
+      }
+      .fab-button {
+        position: fixed;
+        bottom: 30px;
+        right: 25px;
+        width: 60px;
+        height: 60px;
+        background: #0d6efd;
+        color: white;
+        border-radius: 18px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        border: none;
+        z-index: 1050;
+      }
+      .device-tag {
+        font-family: "Monaco", "Consolas", monospace;
+        font-size: 11px;
+        background: #f1f5f9;
+        color: #0f172a;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-weight: 700;
+      }
+    </style>
   </head>
-  <body>
+  <body class="bg-light">
     <div class="overlay" id="sidebarOverlay"></div>
 
     <div class="sidebar p-4" id="mainSidebar">
@@ -35,14 +74,17 @@
         <a href="dashboard.html" class="nav-link"
           ><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a
         >
-        <a href="manage-users.html" class="nav-link"
+        <a href="manage_users.html" class="nav-link" id="menuUsers"
           ><i class="bi bi-person-gear me-2"></i> Kelola User</a
         >
-        <a href="manage-rooms.html" class="nav-link active"
+        <a href="manage_rooms.html" class="nav-link" id="menuRooms"
           ><i class="bi bi-door-open me-2"></i> Ruangan</a
         >
-        <a href="manage-schedules.html" class="nav-link"
-          ><i class="bi bi-calendar-event me-2"></i> Jadwal Kuliah</a
+        <a href="manage_schedules.html" class="nav-link" id="menuClasses"
+          ><i class="bi bi-calendar-event me-2"></i> Jadwal</a
+        >
+        <a href="profile.html" class="nav-link active"
+          ><i class="bi bi-person-circle me-2"></i> Profil</a
         >
         <div class="mt-auto pt-5">
           <hr class="text-muted opacity-25" />
@@ -56,138 +98,233 @@
       </div>
     </div>
 
-    <button
-      class="btn btn-primary fab d-lg-none"
-      data-bs-toggle="modal"
-      data-bs-target="#modalRoom"
-    >
-      <i class="bi bi-plus-lg fs-3"></i>
-    </button>
-
     <div class="main-content">
       <nav class="navbar navbar-light bg-transparent mb-4 p-0">
         <div
           class="container-fluid p-0 d-flex justify-content-between align-items-center"
         >
-          <button class="btn d-lg-none" id="toggleSidebar">
-            <i class="bi bi-list fs-4"></i>
+          <button class="btn d-lg-none shadow-sm" id="toggleSidebar">
+            <i class="bi bi-list fs-4 text-primary"></i>
           </button>
           <div
             class="ms-auto d-flex align-items-center bg-white p-2 px-3 rounded-pill shadow-sm border"
           >
-            <span id="userName" class="text-dark fw-bold small me-2"
-              >Admin</span
+            <span id="navUserName" class="text-dark fw-bold small me-2"
+              >User</span
             >
             <i class="bi bi-person-circle fs-5 text-primary"></i>
           </div>
         </div>
       </nav>
 
-      <div class="row mb-4 align-items-start">
-        <div class="col">
-          <h3 class="fw-bold m-0 text-dark">Data Ruangan</h3>
-          <p class="text-muted small">Kelola device IoT setiap ruangan</p>
+      <div class="d-flex justify-content-between align-items-center mb-4 px-1">
+        <div>
+          <h4 class="fw-bold mb-0 text-dark">Data Ruangan</h4>
+          <p class="text-muted small mb-0">
+            Kelola daftar ruangan dan Device IoT.
+          </p>
         </div>
-        <div class="col-auto d-none d-lg-block">
-          <button
-            class="btn btn-primary rounded-3 fw-bold px-4 shadow-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#modalRoom"
-          >
-            <i class="bi bi-plus-lg me-2"></i>Tambah Ruangan
-          </button>
-        </div>
+        <button
+          class="btn btn-primary rounded-4 px-4 py-2 fw-bold shadow-sm d-none d-md-block"
+          data-bs-toggle="modal"
+          data-bs-target="#modalTambahRoom"
+        >
+          <i class="bi bi-door-open me-2"></i> TAMBAH RUANGAN
+        </button>
       </div>
 
-      <div
-        class="d-none d-lg-block card border-0 shadow-sm rounded-4 overflow-hidden"
-      >
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light text-muted small fw-bold">
-              <tr>
-                <th class="ps-4 py-3">NAMA RUANGAN</th>
-                <th class="py-3">LOKASI</th>
-                <th class="py-3">DEVICE ID</th>
-                <th class="py-3 text-end pe-4">AKSI</th>
-              </tr>
-            </thead>
-            <tbody id="roomTableBody"></tbody>
-          </table>
+      <div id="roomContainer">
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary"></div>
         </div>
       </div>
+    </div>
 
-      <div class="d-lg-none row g-2" id="roomCardContainer"></div>
+    <button
+      class="fab-button d-md-none shadow"
+      data-bs-toggle="modal"
+      data-bs-target="#modalTambahRoom"
+    >
+      <i class="bi bi-plus-lg"></i>
+    </button>
+
+    <div class="modal fade" id="modalTambahRoom" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius: 28px">
+          <div class="modal-header border-0 pt-4 px-4 pb-0">
+            <h5 class="fw-bold mb-0">Tambah Ruangan</h5>
+            <button
+              type="button"
+              class="btn-close shadow-none"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <form id="formTambahRoom">
+            <div class="modal-body p-4 text-start">
+              <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1 text-uppercase"
+                  >Nama Ruangan</label
+                >
+                <input
+                  type="text"
+                  name="nama_ruangan"
+                  class="form-control border-2 py-2"
+                  style="border-radius: 12px"
+                  placeholder="Contoh: Lab Komputer 1"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1 text-uppercase"
+                  >Lokasi</label
+                >
+                <input
+                  type="text"
+                  name="lokasi"
+                  class="form-control border-2 py-2"
+                  style="border-radius: 12px"
+                  placeholder="Contoh: Gedung A Lt. 2"
+                  required
+                />
+              </div>
+              <div class="mb-0">
+                <label class="small fw-bold text-muted mb-1 text-uppercase"
+                  >Device ID (IoT)</label
+                >
+                <input
+                  type="text"
+                  name="device_id"
+                  class="form-control border-2 py-2"
+                  style="border-radius: 12px"
+                  placeholder="Contoh: ESP32_ROOM_01"
+                  required
+                />
+              </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+              <button
+                type="submit"
+                class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow"
+              >
+                SIMPAN RUANGAN
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/config.js"></script>
     <script src="assets/js/auth.js"></script>
+
     <script>
       $(document).ready(function () {
         const session = checkAuth();
         if (session) {
-          $("#userName").text(session.nama_lengkap);
-          loadRooms();
+          if (session.role === "mahasiswa") {
+            location.href = "dashboard.html";
+            return;
+          }
+          $("#navUserName").text(session.nama_lengkap);
+          renderRooms();
         }
         $("#toggleSidebar, #sidebarOverlay").on("click", function () {
-          $("#mainSidebar").toggleClass("show");
-          $("#sidebarOverlay").toggleClass("show");
+          $("#mainSidebar, #sidebarOverlay").toggleClass("show");
         });
       });
 
-      function loadRooms() {
+      function renderRooms() {
         $.ajax({
-          url: `${SB_URL}/ruangan?select=*&order=id.desc`,
+          url: `${SB_URL}/ruangan?select=*&order=nama_ruangan.asc`,
           method: "GET",
           headers: SB_HEADERS,
           success: function (data) {
-            let rows = "";
-            let cards = "";
+            if (data.length === 0) {
+              $("#roomContainer").html(
+                '<div class="text-center py-5 opacity-50">Belum ada data ruangan.</div>',
+              );
+              return;
+            }
+
+            let desktop = `<div class="card border-0 shadow-sm rounded-4 d-none d-md-block overflow-hidden"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="bg-light small fw-bold"><tr><th class="ps-4 py-3 text-uppercase">Nama Ruangan</th><th class="text-uppercase">Lokasi</th><th class="text-uppercase">Device ID</th><th class="text-end pe-4 text-uppercase">Aksi</th></tr></thead><tbody>`;
+            let mobile = `<div class="row g-2 d-md-none">`;
+
             data.forEach((r) => {
-              rows += `<tr>
-                        <td class="ps-4 fw-600 text-dark">${r.nama_ruangan}</td>
-                        <td>${r.lokasi}</td>
-                        <td><code class="text-primary fw-bold">${r.device_id}</code></td>
+              desktop += `<tr>
+                        <td class="ps-4 fw-bold text-dark">${r.nama_ruangan}</td>
+                        <td class="small text-muted">${r.lokasi}</td>
+                        <td><span class="device-tag">${r.device_id}</span></td>
                         <td class="text-end pe-4">
-                            <button onclick="deleteRoom(${r.id})" class="btn btn-light btn-sm text-danger"><i class="bi bi-trash"></i></button>
+                            <button onclick="hapusRoom(${r.id})" class="btn btn-light btn-sm text-danger rounded-3 border"><i class="bi bi-trash"></i></button>
                         </td>
                     </tr>`;
 
-              cards += `
-                    <div class="col-6">
-                        <div class="card border-0 shadow-sm p-3 h-100 rounded-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <i class="bi bi-door-open-fill text-primary"></i>
-                                <i onclick="deleteRoom(${r.id})" class="bi bi-trash text-danger"></i>
-                            </div>
-                            <h6 class="fw-bold mb-0 text-truncate" style="font-size: 0.85rem;">${r.nama_ruangan}</h6>
-                            <p class="text-muted mb-2 text-truncate" style="font-size: 0.65rem;">${r.lokasi}</p>
-                            <code class="d-block bg-light p-1 rounded text-center" style="font-size: 0.6rem;">${r.device_id}</code>
+              mobile += `<div class="col-6"><div class="card card-room p-3 shadow-sm bg-white">
+                        <div class="d-flex justify-content-between mb-2">
+                            <i class="bi bi-door-closed-fill text-primary fs-5"></i>
+                            <i onclick="hapusRoom(${r.id})" class="bi bi-trash text-danger"></i>
                         </div>
-                    </div>`;
+                        <h6 class="fw-bold mb-1 text-truncate small text-dark">${r.nama_ruangan}</h6>
+                        <p class="text-muted mb-2 text-truncate" style="font-size: 10px;">${r.lokasi}</p>
+                        <div class="text-center mt-auto">
+                            <span class="device-tag d-block text-truncate" style="font-size: 9px;">${r.device_id}</span>
+                        </div>
+                    </div></div>`;
             });
-            $("#roomTableBody").html(rows);
-            $("#roomCardContainer").html(cards);
+
+            $("#roomContainer").html(
+              desktop + "</tbody></table></div></div>" + mobile + "</div>",
+            );
           },
         });
       }
 
-      function deleteRoom(id) {
+      $("#formTambahRoom").on("submit", function (e) {
+        e.preventDefault();
+        const data = {};
+        $(this)
+          .serializeArray()
+          .forEach((item) => (data[item.name] = item.value));
+
+        $.ajax({
+          url: `${SB_URL}/ruangan`,
+          method: "POST",
+          headers: { ...SB_HEADERS, "Content-Type": "application/json" },
+          data: JSON.stringify(data),
+          success: () => {
+            $("#modalTambahRoom").modal("hide");
+            this.reset();
+            Swal.fire({
+              icon: "success",
+              title: "Berhasil",
+              text: "Ruangan ditambahkan",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+            renderRooms();
+          },
+          error: (err) => {
+            Swal.fire("Error", "Device ID mungkin sudah terdaftar", "error");
+          },
+        });
+      });
+
+      function hapusRoom(id) {
         Swal.fire({
           title: "Hapus Ruangan?",
+          text: "Data jadwal yang terkait mungkin ikut terpengaruh.",
           icon: "warning",
           showCancelButton: true,
-          confirmButtonColor: "#d33",
-          confirmButtonText: "Hapus!",
-        }).then((result) => {
-          if (result.isConfirmed) {
+          confirmButtonText: "Ya, Hapus",
+        }).then((res) => {
+          if (res.isConfirmed) {
             $.ajax({
               url: `${SB_URL}/ruangan?id=eq.${id}`,
               method: "DELETE",
               headers: SB_HEADERS,
-              success: () => location.reload(),
+              success: () => renderRooms(),
             });
           }
         });

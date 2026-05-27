@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profil Saya | Secure-Lock</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="assets/css/dashboard.css" />
+    <style>
+      #toggleSidebar {
+        border-radius: 12px !important;
+        border: 1px solid #edf2f7 !important;
+        background: #fff;
+        padding: 8px 12px;
+      }
+      .card-profile {
+        border-radius: 28px;
+        border: 1px solid #edf2f7 !important;
+      }
+      .profile-icon {
+        width: 80px;
+        height: 80px;
+        background: #0d6efd;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar p-4" id="mainSidebar">
+      <div class="d-flex align-items-center mb-5 px-2">
+        <i class="bi bi-shield-lock-fill text-primary fs-3 me-2"></i>
+        <h5 class="fw-bold mb-0 text-primary">SECURE-LOCK</h5>
+      </div>
+      <div class="nav flex-column">
+        <a href="dashboard.html" class="nav-link"
+          ><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a
+        >
+        <a href="manage_users.html" class="nav-link" id="menuUsers"
+          ><i class="bi bi-person-gear me-2"></i> Kelola User</a
+        >
+        <a href="manage_rooms.html" class="nav-link" id="menuRooms"
+          ><i class="bi bi-door-open me-2"></i> Ruangan</a
+        >
+        <a href="manage_schedules.html" class="nav-link" id="menuClasses"
+          ><i class="bi bi-calendar-event me-2"></i> Jadwal</a
+        >
+        <a href="profile.html" class="nav-link active"
+          ><i class="bi bi-person-circle me-2"></i> Profil</a
+        >
+        <div class="mt-auto pt-5">
+          <hr class="text-muted opacity-25" />
+          <a
+            href="javascript:void(0)"
+            onclick="logoutUser()"
+            class="nav-link text-danger"
+            ><i class="bi bi-box-arrow-left me-2"></i> Logout</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <nav class="navbar navbar-light bg-transparent mb-4 p-0">
+        <div
+          class="container-fluid p-0 d-flex justify-content-between align-items-center"
+        >
+          <button class="btn d-lg-none shadow-sm" id="toggleSidebar">
+            <i class="bi bi-list fs-4 text-primary"></i>
+          </button>
+          <div
+            class="ms-auto d-flex align-items-center bg-white p-2 px-3 rounded-pill shadow-sm border"
+          >
+            <span id="navUserName" class="text-dark fw-bold small me-2"
+              >User</span
+            >
+            <i class="bi bi-person-circle fs-5 text-primary"></i>
+          </div>
+        </div>
+      </nav>
+
+      <div class="container p-0">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div
+              class="card card-profile p-4 text-center shadow-sm mb-4 bg-white"
+            >
+              <div class="profile-icon shadow">
+                <i class="bi bi-person-fill fs-1"></i>
+              </div>
+              <h4 class="fw-bold text-dark mb-0" id="profNama">Nama Lengkap</h4>
+              <p class="text-muted small" id="profUser">@username</p>
+              <div class="d-flex justify-content-center">
+                <span
+                  id="profRole"
+                  class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-4 py-2 fw-bold text-uppercase"
+                  style="font-size: 10px"
+                  >ROLE</span
+                >
+              </div>
+            </div>
+
+            <div class="card card-profile p-4 shadow-sm bg-white">
+              <h6
+                class="fw-bold text-dark mb-4 text-uppercase"
+                style="letter-spacing: 1px"
+              >
+                Keamanan Akun
+              </h6>
+              <form id="formUpdatePassword">
+                <div class="mb-3 text-start">
+                  <label class="small fw-bold text-muted mb-1"
+                    >PASSWORD BARU</label
+                  >
+                  <input
+                    type="password"
+                    name="new_pass"
+                    class="form-control border-2 py-2"
+                    style="border-radius: 12px"
+                    placeholder="Min. 6 Karakter"
+                    required
+                  />
+                </div>
+                <div class="mb-4 text-start">
+                  <label class="small fw-bold text-muted mb-1"
+                    >KONFIRMASI PASSWORD</label
+                  >
+                  <input
+                    type="password"
+                    name="confirm_pass"
+                    class="form-control border-2 py-2"
+                    style="border-radius: 12px"
+                    placeholder="Ulangi password"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100 fw-bold py-3 rounded-4 shadow"
+                >
+                  PERBARUI PASSWORD
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        const session = checkAuth();
+        if (session) {
+          $("#navUserName").text(session.nama_lengkap);
+          $("#profNama").text(session.nama_lengkap);
+          $("#profUser").text("@" + session.username);
+          $("#profRole").text(session.role.replace("_", " "));
+
+          if (session.role === "mahasiswa")
+            $("#menuUsers, #menuRooms, #menuClasses").hide();
+        }
+        $("#toggleSidebar, #sidebarOverlay").on("click", function () {
+          $("#mainSidebar, #sidebarOverlay").toggleClass("show");
+        });
+
+        $("#formUpdatePassword").on("submit", function (e) {
+          e.preventDefault();
+          const newPass = $('input[name="new_pass"]').val();
+          const confirmPass = $('input[name="confirm_pass"]').val();
+
+          if (newPass.length < 6) {
+            Swal.fire("Gagal", "Password minimal 6 karakter", "error");
+            return;
+          }
+
+          if (newPass !== confirmPass) {
+            Swal.fire("Gagal", "Konfirmasi password tidak cocok", "error");
+            return;
+          }
+
+          const btn = $(this).find('button[type="submit"]');
+          btn.prop("disabled", true).text("MEMPROSES...");
+
+          $.ajax({
+            url: `${SB_URL}/users?id=eq.${session.id}`,
+            method: "PATCH",
+            headers: { ...SB_HEADERS, "Content-Type": "application/json" },
+            data: JSON.stringify({ password: newPass }),
+            success: () => {
+              Swal.fire({
+                icon: "success",
+                title: "Berhasil",
+                text: "Password diperbarui!",
+                timer: 1500,
+                showConfirmButton: false,
+              });
+              $("#formUpdatePassword")[0].reset();
+            },
+            complete: () =>
+              btn.prop("disabled", false).text("PERBARUI PASSWORD"),
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

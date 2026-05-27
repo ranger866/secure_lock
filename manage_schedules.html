@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jadwal Kuliah | Secure-Lock</title>
+    <title>Kelola Jadwal | Secure-Lock</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -22,98 +22,395 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="assets/css/dashboard.css" />
+    <style>
+      #toggleSidebar {
+        border-radius: 12px !important;
+        border: 1px solid #edf2f7 !important;
+        background: #fff;
+        padding: 8px 12px;
+      }
+      .card-schedule {
+        border-radius: 28px;
+        border: 1px solid #edf2f7 !important;
+        transition: 0.3s;
+        height: 100%;
+      }
+      .fab-button {
+        position: fixed;
+        bottom: 30px;
+        right: 25px;
+        width: 60px;
+        height: 60px;
+        background: #0d6efd;
+        color: white;
+        border-radius: 18px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        border: none;
+        z-index: 1050;
+      }
+      .time-tag {
+        font-size: 10px;
+        font-weight: 700;
+        color: #0d6efd;
+        background: rgba(13, 110, 253, 0.1);
+        padding: 2px 8px;
+        border-radius: 6px;
+      }
+    </style>
   </head>
-  <body>
+  <body class="bg-light">
     <div class="overlay" id="sidebarOverlay"></div>
 
-    <div class="sidebar p-4" id="mainSidebar"></div>
-
-    <button
-      class="btn btn-primary fab d-lg-none"
-      data-bs-toggle="modal"
-      data-bs-target="#modalSchedule"
-    >
-      <i class="bi bi-calendar-plus fs-3"></i>
-    </button>
-
-    <div class="main-content">
-      <nav class="navbar navbar-light bg-transparent mb-4 p-0"></nav>
-
-      <div class="row mb-4 align-items-start">
-        <div class="col">
-          <h3 class="fw-bold m-0 text-dark">Jadwal Kuliah</h3>
-          <p class="text-muted small">Akses otomatis sesuai jadwal</p>
-        </div>
-        <div class="col-auto d-none d-lg-block">
-          <button
-            class="btn btn-primary rounded-3 fw-bold px-4 shadow-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#modalSchedule"
+    <div class="sidebar p-4" id="mainSidebar">
+      <div class="d-flex align-items-center mb-5 px-2">
+        <i class="bi bi-shield-lock-fill text-primary fs-3 me-2"></i>
+        <h5 class="fw-bold mb-0 text-primary">SECURE-LOCK</h5>
+      </div>
+      <div class="nav flex-column">
+        <a href="dashboard.html" class="nav-link"
+          ><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a
+        >
+        <a href="manage_users.html" class="nav-link" id="menuUsers"
+          ><i class="bi bi-person-gear me-2"></i> Kelola User</a
+        >
+        <a href="manage_rooms.html" class="nav-link" id="menuRooms"
+          ><i class="bi bi-door-open me-2"></i> Ruangan</a
+        >
+        <a href="manage_schedules.html" class="nav-link" id="menuClasses"
+          ><i class="bi bi-calendar-event me-2"></i> Jadwal</a
+        >
+        <a href="profile.html" class="nav-link active"
+          ><i class="bi bi-person-circle me-2"></i> Profil</a
+        >
+        <div class="mt-auto pt-5">
+          <hr class="text-muted opacity-25" />
+          <a
+            href="javascript:void(0)"
+            onclick="logoutUser()"
+            class="nav-link text-danger"
+            ><i class="bi bi-box-arrow-left me-2"></i> Logout</a
           >
-            <i class="bi bi-plus-lg me-2"></i>Tambah Jadwal
-          </button>
         </div>
       </div>
-
-      <div
-        class="d-none d-lg-block card border-0 shadow-sm rounded-4 overflow-hidden"
-      >
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light text-muted small fw-bold">
-              <tr>
-                <th class="ps-4 py-3">MATA KULIAH</th>
-                <th class="py-3">DOSEN/PJ</th>
-                <th class="py-3">RUANGAN</th>
-                <th class="py-3">HARI & JAM</th>
-                <th class="py-3 text-end pe-4">AKSI</th>
-              </tr>
-            </thead>
-            <tbody id="scheduleTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="d-lg-none row g-2" id="scheduleCardContainer"></div>
     </div>
 
+    <div class="main-content">
+      <nav class="navbar navbar-light bg-transparent mb-4 p-0">
+        <div
+          class="container-fluid p-0 d-flex justify-content-between align-items-center"
+        >
+          <button class="btn d-lg-none shadow-sm" id="toggleSidebar">
+            <i class="bi bi-list fs-4 text-primary"></i>
+          </button>
+          <div
+            class="ms-auto d-flex align-items-center bg-white p-2 px-3 rounded-pill shadow-sm border"
+          >
+            <span id="navUserName" class="text-dark fw-bold small me-2"
+              >User</span
+            >
+            <i class="bi bi-person-circle fs-5 text-primary"></i>
+          </div>
+        </div>
+      </nav>
+
+      <div class="d-flex justify-content-between align-items-center mb-4 px-1">
+        <div>
+          <h4 class="fw-bold mb-0 text-dark">Jadwal Kuliah</h4>
+          <p class="text-muted small mb-0">
+            Atur akses otomatis berdasarkan waktu.
+          </p>
+        </div>
+        <button
+          class="btn btn-primary rounded-4 px-4 py-2 fw-bold shadow-sm d-none d-md-block"
+          data-bs-toggle="modal"
+          data-bs-target="#modalTambahJadwal"
+        >
+          <i class="bi bi-calendar-plus me-2"></i> TAMBAH JADWAL
+        </button>
+      </div>
+
+      <div id="scheduleContainer">
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary"></div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="fab-button d-md-none shadow"
+      data-bs-toggle="modal"
+      data-bs-target="#modalTambahJadwal"
+    >
+      <i class="bi bi-plus-lg"></i>
+    </button>
+
+    <div class="modal fade" id="modalTambahJadwal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius: 28px">
+          <div class="modal-header border-0 pt-4 px-4 pb-0">
+            <h5 class="fw-bold mb-0">Buat Jadwal Baru</h5>
+            <button
+              type="button"
+              class="btn-close shadow-none"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <form id="formTambahJadwal">
+            <div class="modal-body p-4 text-start">
+              <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1 text-uppercase"
+                  >Mata Kuliah</label
+                >
+                <input
+                  type="text"
+                  name="mata_kuliah"
+                  class="form-control border-2"
+                  style="border-radius: 12px"
+                  required
+                />
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="small fw-bold text-muted mb-1 text-uppercase"
+                    >Hari</label
+                  >
+                  <select
+                    name="hari"
+                    class="form-select border-2"
+                    style="border-radius: 12px"
+                    required
+                  >
+                    <option value="Monday">Senin</option>
+                    <option value="Tuesday">Selasa</option>
+                    <option value="Wednesday">Rabu</option>
+                    <option value="Thursday">Kamis</option>
+                    <option value="Friday">Jumat</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="small fw-bold text-muted mb-1 text-uppercase"
+                    >Ruangan</label
+                  >
+                  <select
+                    name="ruangan_id"
+                    id="optRooms"
+                    class="form-select border-2"
+                    style="border-radius: 12px"
+                    required
+                  ></select>
+                </div>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="small fw-bold text-muted mb-1 text-uppercase"
+                    >Jam Mulai</label
+                  >
+                  <input
+                    type="time"
+                    name="jam_mulai"
+                    class="form-control border-2"
+                    style="border-radius: 12px"
+                    required
+                  />
+                </div>
+                <div class="col-6">
+                  <label class="small fw-bold text-muted mb-1 text-uppercase"
+                    >Jam Selesai</label
+                  >
+                  <input
+                    type="time"
+                    name="jam_selesai"
+                    class="form-control border-2"
+                    style="border-radius: 12px"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1 text-uppercase"
+                  >Dosen Pengampu</label
+                >
+                <select
+                  name="dosen_id"
+                  id="optDosen"
+                  class="form-select border-2"
+                  style="border-radius: 12px"
+                  required
+                ></select>
+              </div>
+              <div class="mb-0">
+                <label class="small fw-bold text-muted mb-1 text-uppercase"
+                  >Penanggung Jawab (PJ)</label
+                >
+                <select
+                  name="pj_id"
+                  id="optPJ"
+                  class="form-select border-2"
+                  style="border-radius: 12px"
+                  required
+                ></select>
+              </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+              <button
+                type="submit"
+                class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow"
+              >
+                SIMPAN JADWAL
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+
     <script>
-      // Logic loadSchedules dengan dual-render
-      function loadSchedules() {
+      $(document).ready(function () {
+        const session = checkAuth();
+        if (session) {
+          if (session.role === "mahasiswa") {
+            location.href = "dashboard.html";
+            return;
+          }
+          $("#navUserName").text(session.nama_lengkap);
+          renderSchedules();
+          loadDropdowns();
+        }
+        $("#toggleSidebar, #sidebarOverlay").on("click", function () {
+          $("#mainSidebar, #sidebarOverlay").toggleClass("show");
+        });
+      });
+
+      function loadDropdowns() {
+        // Load Ruangan
+        $.get(`${SB_URL}/ruangan?select=id,nama_ruangan`, (res) => {
+          let opt = '<option value="">Pilih Ruangan...</option>';
+          res.forEach(
+            (r) =>
+              (opt += `<option value="${r.id}">${r.nama_ruangan}</option>`),
+          );
+          $("#optRooms").html(opt);
+        });
+        // Load Dosen & Mahasiswa (untuk PJ)
+        $.get(`${SB_URL}/users?select=id,nama_lengkap,role`, (res) => {
+          let optDosen = '<option value="">Pilih Dosen...</option>';
+          let optPJ = '<option value="">Pilih PJ...</option>';
+          res.forEach((u) => {
+            if (u.role === "dosen")
+              optDosen += `<option value="${u.id}">${u.nama_lengkap}</option>`;
+            optPJ += `<option value="${u.id}">${u.nama_lengkap} (${u.role})</option>`;
+          });
+          $("#optDosen").html(optDosen);
+          $("#optPJ").html(optPJ);
+        });
+      }
+
+      function renderSchedules() {
+        // Query Join Supabase untuk Jadwal
         $.ajax({
-          url: `${SB_URL}/jadwal_kuliah?select=*,users(nama_lengkap),ruangan(nama_ruangan)&order=id.desc`,
+          url: `${SB_URL}/jadwal_kuliah?select=*,ruangan(nama_ruangan),dosen:dosen_id(nama_lengkap),pj:pj_id(nama_lengkap)&order=hari.asc`,
           method: "GET",
           headers: SB_HEADERS,
           success: function (data) {
-            let rows = "";
-            let cards = "";
-            data.forEach((j) => {
-              rows += `<tr>
-                        <td class="ps-4 fw-bold text-dark">${j.mata_kuliah}</td>
-                        <td>${j.users.nama_lengkap}</td>
-                        <td>${j.ruangan.nama_ruangan}</td>
-                        <td><span class="badge bg-primary-subtle text-primary">${j.hari}, ${j.jam_mulai.slice(0, 5)}</span></td>
-                        <td class="text-end pe-4"><button onclick="deleteSchedule(${j.id})" class="btn btn-light btn-sm text-danger"><i class="bi bi-trash"></i></button></td>
+            if (data.length === 0) {
+              $("#scheduleContainer").html(
+                '<div class="text-center py-5 opacity-50">Belum ada jadwal kuliah.</div>',
+              );
+              return;
+            }
+
+            let desktop = `<div class="card border-0 shadow-sm rounded-4 d-none d-md-block overflow-hidden"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="bg-light small fw-bold"><tr><th class="ps-4 py-3">MK & HARI</th><th>WAKTU</th><th>RUANGAN</th><th>DOSEN & PJ</th><th class="text-end pe-4">AKSI</th></tr></thead><tbody>`;
+            let mobile = `<div class="row g-2 d-md-none">`;
+
+            data.forEach((s) => {
+              const mk = s.mata_kuliah;
+              const hari = s.hari.toUpperCase();
+              const waktu = `${s.jam_mulai.substring(0, 5)} - ${s.jam_selesai.substring(0, 5)}`;
+
+              desktop += `<tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark">${mk}</div>
+                            <div class="small text-primary fw-bold">${hari}</div>
+                        </td>
+                        <td><span class="time-tag">${waktu}</span></td>
+                        <td><div class="fw-bold small text-dark">${s.ruangan.nama_ruangan}</div></td>
+                        <td>
+                            <div class="small text-dark">Dsn: ${s.dosen.nama_lengkap}</div>
+                            <div class="small text-muted" style="font-size:10px">PJ: ${s.pj.nama_lengkap}</div>
+                        </td>
+                        <td class="text-end pe-4"><button onclick="hapusJadwal(${s.id})" class="btn btn-light btn-sm text-danger rounded-3 border"><i class="bi bi-trash"></i></button></td>
                     </tr>`;
 
-              cards += `
-                    <div class="col-6">
-                        <div class="card border-0 shadow-sm p-3 h-100 rounded-4 border-start border-primary border-4">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="fw-bold text-primary" style="font-size: 0.6rem;">${j.hari.toUpperCase()}</span>
-                                <i onclick="deleteSchedule(${j.id})" class="bi bi-trash text-danger" style="font-size: 0.8rem;"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-truncate" style="font-size: 0.8rem;">${j.mata_kuliah}</h6>
-                            <p class="text-muted mb-1 text-truncate" style="font-size: 0.6rem;">${j.users.nama_lengkap.split(" ")[0]}</p>
-                            <div class="bg-light p-1 rounded-2 text-center mt-auto" style="font-size: 0.6rem;">
-                                <strong>${j.ruangan.nama_ruangan}</strong><br>${j.jam_mulai.slice(0, 5)}
-                            </div>
-                        </div>
-                    </div>`;
+              mobile += `<div class="col-6"><div class="card card-schedule p-3 shadow-sm bg-white">
+                        <div class="d-flex justify-content-between mb-2"><span class="time-tag" style="font-size:8px">${hari}</span><i onclick="hapusJadwal(${s.id})" class="bi bi-trash text-danger"></i></div>
+                        <h6 class="fw-bold mb-1 text-truncate small text-dark">${mk}</h6>
+                        <div class="small text-muted mb-2" style="font-size:9px"><i class="bi bi-geo-alt me-1"></i>${s.ruangan.nama_ruangan}</div>
+                        <div class="bg-light p-2 rounded-3 text-center mb-0"><span class="fw-bold text-primary" style="font-size:9px">${waktu}</span></div>
+                    </div></div>`;
             });
-            $("#scheduleTableBody").html(rows);
-            $("#scheduleCardContainer").html(cards);
+
+            $("#scheduleContainer").html(
+              desktop + "</tbody></table></div></div>" + mobile + "</div>",
+            );
           },
+        });
+      }
+
+      $("#formTambahJadwal").on("submit", function (e) {
+        e.preventDefault();
+        const data = {};
+        $(this)
+          .serializeArray()
+          .forEach((item) => {
+            // Fix format jam agar sesuai PostgreSQL (HH:mm:ss)
+            let val = item.value;
+            if (item.name.includes("jam")) val += ":00";
+            data[item.name] = val;
+          });
+
+        $.ajax({
+          url: `${SB_URL}/jadwal_kuliah`,
+          method: "POST",
+          headers: { ...SB_HEADERS, "Content-Type": "application/json" },
+          data: JSON.stringify(data),
+          success: () => {
+            $("#modalTambahJadwal").modal("hide");
+            this.reset();
+            Swal.fire({
+              icon: "success",
+              title: "Jadwal Disimpan",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+            renderSchedules();
+          },
+        });
+      });
+
+      function hapusJadwal(id) {
+        Swal.fire({
+          title: "Hapus Jadwal?",
+          text: "Akses otomatis akan dihentikan.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Ya, Hapus",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            $.ajax({
+              url: `${SB_URL}/jadwal_kuliah?id=eq.${id}`,
+              method: "DELETE",
+              headers: SB_HEADERS,
+              success: () => renderSchedules(),
+            });
+          }
         });
       }
     </script>
