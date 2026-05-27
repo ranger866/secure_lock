@@ -183,11 +183,12 @@
                     style="border-radius: 12px"
                     required
                   >
-                    <option value="Monday">Senin</option>
-                    <option value="Tuesday">Selasa</option>
-                    <option value="Wednesday">Rabu</option>
-                    <option value="Thursday">Kamis</option>
-                    <option value="Friday">Jumat</option>
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                    <option value="Sabtu">Sabtu</option>
                   </select>
                 </div>
                 <div class="col-6">
@@ -291,26 +292,41 @@
 
       function loadDropdowns() {
         // Load Ruangan
-        $.get(`${SB_URL}/ruangan?select=id,nama_ruangan`, (res) => {
-          let opt = '<option value="">Pilih Ruangan...</option>';
-          res.forEach(
-            (r) =>
-              (opt += `<option value="${r.id}">${r.nama_ruangan}</option>`),
-          );
-          $("#optRooms").html(opt);
+        $.ajax({
+          url: `${SB_URL}/ruangan?select=id,nama_ruangan`,
+          type: "GET",
+          headers: SB_HEADERS,
+          success: function (res) {
+            let opt = '<option value="">Pilih Ruangan...</option>';
+            res.forEach(
+              (r) =>
+                (opt += `<option value="${r.id}">${r.nama_ruangan}</option>`),
+            );
+            $("#optRooms").html(opt);
+          },
+          error: function (xhr, status, error) {
+            console.error("Gagal mengambil data ruangan:", error);
+          },
         });
+
         // Load Dosen & Mahasiswa (untuk PJ)
-        $.get(`${SB_URL}/users?select=id,nama_lengkap,role`, (res) => {
-          let optDosen = '<option value="">Pilih Dosen...</option>';
-          let optPJ = '<option value="">Pilih PJ...</option>';
-          res.forEach((u) => {
-            if (u.role === "dosen")
-              optDosen += `<option value="${u.id}">${u.nama_lengkap}</option>`;
-            optPJ += `<option value="${u.id}">${u.nama_lengkap} (${u.role})</option>`;
-          });
-          $("#optDosen").html(optDosen);
-          $("#optPJ").html(optPJ);
-        });
+        $.ajax({
+          url: `${SB_URL}/users?select=id,nama_lengkap,role`,
+          type: "GET",
+          headers: SB_HEADERS,
+          success: function (res) {
+            let optDosen = '<option value="">Pilih Dosen...</option>';
+            let optPJ = '<option value="">Pilih PJ...</option>';
+            res.forEach((u) => {
+              if (u.role === "dosen")
+                optDosen += `<option value="${u.id}">${u.nama_lengkap}</option>`;
+              if (u.role === "mahasiswa")
+                optPJ += `<option value="${u.id}">${u.nama_lengkap}</option>`;
+            });
+            $("#optDosen").html(optDosen);
+            $("#optPJ").html(optPJ);
+          },
+        }); 
       }
 
       function renderSchedules() {
@@ -379,7 +395,7 @@
         $.ajax({
           url: `${SB_URL}/jadwal_kuliah`,
           method: "POST",
-          headers: { ...SB_HEADERS, "Content-Type": "application/json" },
+          headers: SB_HEADERS,
           data: JSON.stringify(data),
           success: () => {
             $("#modalTambahJadwal").modal("hide");

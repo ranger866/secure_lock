@@ -146,7 +146,7 @@
         <i class="bi bi-cpu bi-cpu-bg"></i>
         <div class="hero-text-wrapper position-relative" style="z-index: 2">
           <h3 class="fw-bold mb-1">
-            Halo, <span id="welcomeName">User</span>! 👋
+            Halo, <span id="welcomeName">User</span>!👋
           </h3>
           <p class="mb-0 small opacity-75">
             Gunakan akses sesuai jadwal (PJ) atau peminjaman aktif Anda.
@@ -217,13 +217,12 @@
                   style="border-radius: 12px"
                   required
                 >
-                  <option value="Monday">Senin</option>
-                  <option value="Tuesday">Selasa</option>
-                  <option value="Wednesday">Rabu</option>
-                  <option value="Thursday">Kamis</option>
-                  <option value="Friday">Jumat</option>
-                  <option value="Saturday">Sabtu</option>
-                  <option value="Sunday">Minggu</option>
+                  <option value="Senin">Senin</option>
+                  <option value="Selasa">Selasa</option>
+                  <option value="Rabu">Rabu</option>
+                  <option value="Kamis">Kamis</option>
+                  <option value="Jumat">Jumat</option>
+                  <option value="Sabtu">Sabtu</option>
                 </select>
               </div>
               <div class="row g-3">
@@ -296,18 +295,16 @@
 
       async function loadDashboard(session) {
         const now = new Date();
-        const hariIni = now.toLocaleDateString("en-US", { weekday: "long" });
-        const jamSekarang = now.toTimeString().split(" ")[0]; // HH:mm:ss
 
         try {
           const jadwal = await $.ajax({
-            url: `${SB_URL}/jadwal_kuliah?pj_id=eq.${session.id}&hari=eq.${hariIni}&jam_mulai=lte.${jamSekarang}&jam_selesai=gte.${jamSekarang}&select=*,ruangan(*)`,
+            url: `${SB_URL}/jadwal_kuliah?pj_id=eq.${session.id}&select=*,ruangan(*)`,
             method: "GET",
             headers: SB_HEADERS,
           });
 
           const pinjam = await $.ajax({
-            url: `${SB_URL}/peminjaman?user_id=eq.${session.id}&hari_pinjam=eq.${hariIni}&waktu_mulai=lte.${jamSekarang}&waktu_selesai=gte.${jamSekarang}&select=*,ruangan(*)`,
+            url: `${SB_URL}/peminjaman?user_id=eq.${session.id}&select=*,ruangan(*)`,
             method: "GET",
             headers: SB_HEADERS,
           });
@@ -335,7 +332,7 @@
                 <div class="col-lg-4 col-6 mb-2">
                     <div class="card pintu-card p-3 shadow-sm bg-white border">
                         <div class="d-flex justify-content-between mb-2">
-                            <div class="badge bg-${color}-subtle text-${color} rounded-pill px-2" style="font-size: 8px;">${isOpen ? "TERBUKA" : "TERKUNCI"}</div>
+                            <div class="badge bg-${color}-subtle text-${color} align-middle text-center rounded-pill px-2" style="font-size: 8px;">${isOpen ? "TERBUKA" : "TERKUNCI"}</div>
                             <i class="bi ${isOpen ? "bi-door-open-fill" : "bi-door-closed-fill"} text-${color} fs-4"></i>
                         </div>
                         <h6 class="fw-bold mb-0 text-truncate text-dark small">${r.nama_ruangan}</h6>
@@ -385,7 +382,7 @@
         $.ajax({
           url: `${SB_URL}/peminjaman`,
           method: "POST",
-          headers: { ...SB_HEADERS, "Content-Type": "application/json" },
+          headers: SB_HEADERS,
           data: JSON.stringify(formData),
           success: () => {
             location.reload();
@@ -401,7 +398,7 @@
         $.ajax({
           url: targetUrl,
           method: "PATCH",
-          headers: { ...SB_HEADERS, "Content-Type": "application/json" },
+          headers: SB_HEADERS,
           data: JSON.stringify({ status_kunci: status.toString() }),
           success: () => {
             location.reload();
