@@ -1,0 +1,63 @@
+/* assets/css/dashboard.css */
+body { 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    background-color: #f4f7fe; 
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: white;
+    border-right: 1px solid #eef2f6;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.main-content {
+    margin-left: 280px;
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+
+.nav-link {
+    color: #64748b;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: #f0f7ff;
+    color: #0d6efd;
+}
+
+/* Penyelarasan Button Menu dengan Badge Profile */
+#toggleSidebar {
+    background-color: white;
+    border: 1px solid #dee2e6 !important; /* Sama dengan border profil */
+    color: #0d6efd;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
+    padding: 8px 12px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 991.98px) {
+    .sidebar { left: -280px; }
+    .sidebar.show { left: 0; }
+    .main-content { margin-left: 0; padding: 20px; }
+    .overlay {
+        display: none;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.2);
+        z-index: 999;
+    }
+    .overlay.show { display: block; }
+}
