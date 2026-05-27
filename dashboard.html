@@ -38,26 +38,27 @@
 
 <div class="main-content">
     <nav class="navbar navbar-light bg-transparent mb-4 p-0">
-        <div class="container-fluid p-0">
-            <button class="btn d-lg-none rounded-pill" id="toggleSidebar">
+        <div class="container-fluid p-0 d-flex justify-content-between align-items-center">
+            <button class="btn d-lg-none" id="toggleSidebar">
                 <i class="bi bi-list fs-4"></i>
             </button>
             
             <div class="ms-auto d-flex align-items-center bg-white p-2 px-3 rounded-pill shadow-sm border">
-                <span class="small fw-600 text-muted me-2 d-none d-sm-inline">Halo, <span id="userName" class="text-dark fw-bold">Admin</span></span>
+                <span id="userName" class="text-dark fw-bold small me-2">Admin</span>
                 <i class="bi bi-person-circle fs-5 text-primary"></i>
             </div>
         </div>
     </nav>
 
-    <div class="row mb-4 align-items-center">
+    <div class="row mb-4 align-items-start">
         <div class="col">
             <h3 class="fw-bold m-0 text-dark">Kontrol Akses Pintu</h3>
-            <p class="text-muted small">Monitor dan kendali pintu secara real-time</p>
+            <p class="text-muted small mb-0">Monitor dan kendali pintu secara real-time</p>
         </div>
         <div class="col-auto">
-            <div class="badge bg-white text-success shadow-sm border p-2 px-3 rounded-pill">
-                <span class="spinner-grow spinner-grow-sm me-1"></span> Live System
+            <div class="badge-live">
+                <span class="dot-live"></span>
+                <span style="font-size: 0.85rem;">Live System</span>
             </div>
         </div>
     </div>
@@ -65,7 +66,7 @@
     <div class="row g-4" id="pintuContainer">
         <div class="col-12 text-center py-5">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="text-muted mt-2">Menarik data dari server...</p>
+            <p class="text-muted mt-2 small">Menghubungkan ke server...</p>
         </div>
     </div>
 </div>
@@ -78,6 +79,7 @@
 
 <script>
     $(document).ready(function() {
+        // Jalankan sistem keamanan dan muat data
         const user = checkAuth();
         if(user) {
             $('#userName').text(user.nama_lengkap);
@@ -85,6 +87,7 @@
             initRealtime();
         }
 
+        // Sidebar Toggle Logic
         $('#toggleSidebar, #sidebarOverlay').on('click', function() {
             $('#mainSidebar').toggleClass('show');
             $('#sidebarOverlay').toggleClass('show');
