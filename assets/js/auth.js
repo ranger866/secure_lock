@@ -30,11 +30,11 @@ function loginUser(username, password) {
 
 function logoutUser() {
   Swal.fire({
-    title: "Hapus User?",
-    text: "Data akan dihapus permanen!",
+    title: "Logout?",
+    text: "Anda akan dikeluarkan dari sistem!",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonText: "Ya, Hapus",
+    confirmButtonText: "Keluar",
   }).then((res) => {
     if (res.isConfirmed) {
       localStorage.clear();
